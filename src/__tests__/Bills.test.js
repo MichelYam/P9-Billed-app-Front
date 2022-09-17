@@ -89,18 +89,22 @@ describe("Given I am connected as an employee", () => {
       router()
     })
     test("fetches bills from an API and fails with 404 message error", async () => {
+      const ui = BillsUI({ error: "Erreur 404" })
+      document.body.innerHTML = ui
 
-      mockStore.bills.mockImplementationOnce(() => {
-        return {
-          list: () => {
-            return Promise.reject(new Error("Erreur 404"))
-          }
-        }
-      })
-      window.onNavigate(ROUTES_PATH.Bills)
-      await new Promise(process.nextTick);
       const message = await screen.getByText(/Erreur 404/)
       expect(message).toBeTruthy()
+      // mockStore.bills.mockImplementationOnce(() => {
+      //   return {
+      //     list: () => {
+      //       return Promise.reject(new Error("Erreur 404"))
+      //     }
+      //   }
+      // })
+      // window.onNavigate(ROUTES_PATH.Bills)
+      // await new Promise(process.nextTick);
+      // const message = await screen.getByText(/Erreur 404/)
+      // expect(message).toBeTruthy()
     })
 
     test("fetches messages from an API and fails with 500 message error", async () => {
