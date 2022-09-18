@@ -43,7 +43,12 @@ describe("Given I am connected as an employee", () => {
 
 
   })
-
+  describe("When I am on Bills Page and I click on the icon eye ", () => {
+    test("Then a modal should open")
+  })
+  describe("When I am on Bills Page and I click on the button 'new bill'", () => {
+    test("It should renders New Bill page ")
+  })
   // test d'intégration GET
   // describe("When I navigate to Dashboard", () => {
   test("fetches bills from mock API GET", async () => {
@@ -89,8 +94,8 @@ describe("Given I am connected as an employee", () => {
       router()
     })
     test("fetches bills from an API and fails with 404 message error", async () => {
-      const ui = BillsUI({ error: "Erreur 404" })
-      document.body.innerHTML = ui
+      const uiMsg = BillsUI({ error: "Erreur 404" })
+      document.body.innerHTML = uiMsg
 
       const message = await screen.getByText(/Erreur 404/)
       expect(message).toBeTruthy()
@@ -109,16 +114,18 @@ describe("Given I am connected as an employee", () => {
 
     test("fetches messages from an API and fails with 500 message error", async () => {
 
-      mockStore.bills.mockImplementationOnce(() => {
-        return {
-          list: () => {
-            return Promise.reject(new Error("Erreur 500"))
-          }
-        }
-      })
+      // mockStore.bills.mockImplementationOnce(() => {
+      //   return {
+      //     list: () => {
+      //       return Promise.reject(new Error("Erreur 500"))
+      //     }
+      //   }
+      // })
+      const uiMsg = BillsUI({ error: "Erreur 500" })
+      document.body.innerHTML = uiMsg
 
-      window.onNavigate(ROUTES_PATH.Bills)
-      await new Promise(process.nextTick);
+      // window.onNavigate(ROUTES_PATH.Bills)
+      // await new Promise(process.nextTick);
       const message = await screen.getByText(/Erreur 500/)
       expect(message).toBeTruthy()
     })
