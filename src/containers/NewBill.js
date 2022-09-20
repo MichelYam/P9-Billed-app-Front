@@ -25,7 +25,9 @@ export default class NewBill {
     const formData = new FormData()
     const email = JSON.parse(localStorage.getItem("user")).email
     const formats = ["jpeg", "jpg", "png"]
-
+    const errorEle = this.document.createElement('p')
+    errorEle.textContent = 'This extension file is not allowed (jpeg, jpg, png only)'
+    errorEle.setAttribute('style', ' color: red;',);
     if (fileFormat.includes(formats)) {
       formData.append('file', file)
       formData.append('email', email)
@@ -46,9 +48,7 @@ export default class NewBill {
         }).catch(error => console.error(error))
     } else {
       inputFile.value = ""
-      return alert(
-        "This extension file is not allowed (jpeg, jpg, png)"
-      )
+      inputFile.parentNode.appendChild(errorEle)
     }
   }
   handleSubmit = e => {

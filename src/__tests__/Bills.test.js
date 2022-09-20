@@ -38,9 +38,8 @@ describe("Given I am connected as an employee", () => {
       const datesSorted = [...dates].sort(antiChrono)
       expect(dates).toEqual(datesSorted)
     })
-
-
   })
+
   describe("When I am on Bills Page and I click on the icon eye ", () => {
     test("Then a modal should open", () => {
       Object.defineProperty(window, 'localStorage', { value: localStorageMock })
@@ -92,81 +91,81 @@ describe("Given I am connected as an employee", () => {
   })
 
   // test d'intégration GET
-  // describe("When I navigate to Dashboard", () => {
-  test("fetches bills from mock API GET", () => {
-    Object.defineProperty(window, "localStorage", { value: localStorageMock, });
-    window.localStorage.setItem("user", JSON.stringify({ type: "Employee", }));
+  describe("When I am on Bills Page", () => {
+    test("fetches bills from mock API GET", () => {
+      Object.defineProperty(window, "localStorage", { value: localStorageMock, });
+      window.localStorage.setItem("user", JSON.stringify({ type: "Employee", }));
 
-    const root = document.createElement("div");
-    root.setAttribute("id", "root");
-    document.body.append(root);
-    // mock navigation
-    const pathname = ROUTES_PATH["Bills"];
-    root.innerHTML = ROUTES({ pathname: pathname, loading: true });
-    //mock bills
-    const bills = new Bills({
-      document,
-      onNavigate,
-      store: mockStore,
-      localStorage,
-    });
-    bills.getBills().then((data) => {
-      root.innerHTML = BillsUI({ data });
-      expect(document.querySelector("tbody").rows.length).toBeGreaterThan(0);
-    })
-  })
-
-  describe("When an error occurs on API", () => {
-    beforeEach(() => {
-      jest.spyOn(mockStore, "bills")
-      Object.defineProperty(
-        window,
-        'localStorage',
-        { value: localStorageMock }
-      )
-      window.localStorage.setItem('user', JSON.stringify({
-        type: 'Employee',
-        email: "a@a"
-      }))
-      const root = document.createElement("div")
-      root.setAttribute("id", "root")
-      document.body.appendChild(root)
-      router()
-    })
-    test("fetches bills from an API and fails with 404 message error", async () => {
-      const uiMsg = BillsUI({ error: "Erreur 404" })
-      document.body.innerHTML = uiMsg
-
-      mockStore.bills.mockImplementationOnce(() => {
-        return {
-          list: () => {
-            return Promise.reject(new Error("Erreur 404"))
-          }
-        }
+      const root = document.createElement("div");
+      root.setAttribute("id", "root");
+      document.body.append(root);
+      // mock navigation
+      const pathname = ROUTES_PATH["Bills"];
+      root.innerHTML = ROUTES({ pathname: pathname, loading: true });
+      //mock bills
+      const bills = new Bills({
+        document,
+        onNavigate,
+        store: mockStore,
+        localStorage,
+      });
+      bills.getBills().then((data) => {
+        root.innerHTML = BillsUI({ data });
+        expect(document.querySelector("tbody").rows.length).toBeGreaterThan(0);
       })
-      window.onNavigate(ROUTES_PATH.Bills)
-      await new Promise(process.nextTick);
-      const message = await screen.getByText(/Erreur 404/)
-      expect(message).toBeTruthy()
     })
 
-    test("fetches messages from an API and fails with 500 message error", async () => {
+    describe("When an error occurs on API", () => {
+      beforeEach(() => {
+        jest.spyOn(mockStore, "bills")
+        Object.defineProperty(
+          window,
+          'localStorage',
+          { value: localStorageMock }
+        )
+        window.localStorage.setItem('user', JSON.stringify({
+          type: 'Employee',
+          email: "a@a"
+        }))
+        const root = document.createElement("div")
+        root.setAttribute("id", "root")
+        document.body.appendChild(root)
+        router()
+      })
+      test("fetches bills from an API and fails with 404 message error", async () => {
+        const uiMsg = BillsUI({ error: "Erreur 404" })
+        document.body.innerHTML = uiMsg
 
-      // mockStore.bills.mockImplementationOnce(() => {
-      //   return {
-      //     list: () => {
-      //       return Promise.reject(new Error("Erreur 500"))
-      //     }
-      //   }
-      // })
-      const uiMsg = BillsUI({ error: "Erreur 500" })
-      document.body.innerHTML = uiMsg
+        // mockStore.bills.mockImplementationOnce(() => {
+        //   return {
+        //     list: () => {
+        //       return Promise.reject(new Error("Erreur 404"))
+        //     }
+        //   }
+        // })
+        window.onNavigate(ROUTES_PATH.Bills)
+        await new Promise(process.nextTick);
+        const message = await screen.getByText(/Erreur 404/)
+        expect(message).toBeTruthy()
+      })
 
-      // window.onNavigate(ROUTES_PATH.Bills)
-      // await new Promise(process.nextTick);
-      const message = await screen.getByText(/Erreur 500/)
-      expect(message).toBeTruthy()
+      test("fetches messages from an API and fails with 500 message error", async () => {
+
+        // mockStore.bills.mockImplementationOnce(() => {
+        //   return {
+        //     list: () => {
+        //       return Promise.reject(new Error("Erreur 500"))
+        //     }
+        //   }
+        // })
+        const uiMsg = BillsUI({ error: "Erreur 500" })
+        document.body.innerHTML = uiMsg
+
+        // window.onNavigate(ROUTES_PATH.Bills)
+        // await new Promise(process.nextTick);
+        const message = await screen.getByText(/Erreur 500/)
+        expect(message).toBeTruthy()
+      })
     })
   })
-
 })
