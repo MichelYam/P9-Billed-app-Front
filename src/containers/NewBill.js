@@ -28,10 +28,11 @@ export default class NewBill {
     const errorEle = this.document.createElement('p')
     errorEle.textContent = 'This extension file is not allowed (jpeg, jpg, png only)'
     errorEle.setAttribute('style', ' color: red;',);
-    if (fileFormat.includes(formats)) {
+    errorEle.setAttribute('id', 'error-msg',);
+    if (formats.includes(fileFormat)) {
+      this.document.getElementById('error-msg').remove()
       formData.append('file', file)
       formData.append('email', email)
-
       this.store
         .bills()
         .create({
@@ -41,7 +42,6 @@ export default class NewBill {
           }
         })
         .then(({ fileUrl, key }) => {
-          console.log(fileUrl)
           this.billId = key
           this.fileUrl = fileUrl
           this.fileName = fileName

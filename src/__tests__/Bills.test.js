@@ -133,8 +133,8 @@ describe("Given I am connected as an employee", () => {
         router()
       })
       test("fetches bills from an API and fails with 404 message error", async () => {
-        const uiMsg = BillsUI({ error: "Erreur 404" })
-        document.body.innerHTML = uiMsg
+        const html = BillsUI({ error: "Erreur 404" })
+        document.body.innerHTML = html
 
         // mockStore.bills.mockImplementationOnce(() => {
         //   return {
@@ -158,8 +158,8 @@ describe("Given I am connected as an employee", () => {
         //     }
         //   }
         // })
-        const uiMsg = BillsUI({ error: "Erreur 500" })
-        document.body.innerHTML = uiMsg
+        const html = BillsUI({ error: "Erreur 500" })
+        document.body.innerHTML = html
 
         // window.onNavigate(ROUTES_PATH.Bills)
         // await new Promise(process.nextTick);
