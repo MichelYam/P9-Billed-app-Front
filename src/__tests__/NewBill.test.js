@@ -20,11 +20,6 @@ describe("Given I am connected as an employee", () => {
       document.body.innerHTML = html
       //to-do write assertion
 
-      const form = screen.getByTestId("form-new-bill");
-      const handleSubmit = jest.fn((e) => e.preventDefault());
-
-      form.addEventListener("submit", handleSubmit);
-      fireEvent.submit(form);
       expect(screen.getByTestId("form-new-bill")).toBeTruthy();
     })
     test("Then mail icon in vertical layout should be highlighted", async () => {

@@ -96,6 +96,7 @@ describe("Given that I am a user on login page", () => {
 
       const handleSubmit = jest.fn(login.handleSubmitEmployee);
       login.login = jest.fn().mockResolvedValue({});
+      console.log(login.login)
       form.addEventListener("submit", handleSubmit);
       fireEvent.submit(form);
       expect(handleSubmit).toHaveBeenCalled();
