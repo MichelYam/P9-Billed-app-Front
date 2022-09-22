@@ -3,6 +3,7 @@
  */
 
 import { screen, waitFor, fireEvent } from "@testing-library/dom";
+import userEvent from '@testing-library/user-event'
 import NewBillUI from "../views/NewBillUI.js"
 import BillsUI from "../views/BillsUI.js"
 import NewBill from "../containers/NewBill.js"
@@ -15,16 +16,16 @@ import router from "../app/Router.js";
 describe("Given I am connected as an employee", () => {
   describe("When I am on NewBill Page", () => {
     test("Then, the form should Appear", () => {
-      // const html = NewBillUI()
-      // document.body.innerHTML = html
-      // //to-do write assertion
+      const html = NewBillUI()
+      document.body.innerHTML = html
+      //to-do write assertion
 
-      // const form = screen.getByTestId("form-new-bill");
-      // const handleSubmit = jest.fn((e) => e.preventDefault());
+      const form = screen.getByTestId("form-new-bill");
+      const handleSubmit = jest.fn((e) => e.preventDefault());
 
-      // form.addEventListener("submit", handleSubmit);
-      // fireEvent.submit(form);
-      // expect(screen.getByTestId("form-new-bill")).toBeTruthy();
+      form.addEventListener("submit", handleSubmit);
+      fireEvent.submit(form);
+      expect(screen.getByTestId("form-new-bill")).toBeTruthy();
     })
     test("Then mail icon in vertical layout should be highlighted", async () => {
       Object.defineProperty(window, 'localStorage', { value: localStorageMock })
@@ -97,113 +98,87 @@ describe("Given I am connected as an employee", () => {
       expect(inputFile.files[0].name).toBe("image.png");
     })
   })
-  // describe("When I do not fill fields and I click on button Send", () => {
-  //   test("Then It should renders new Bill page", () => {
-  //     const html = NewBillUI()
-  //     document.body.innerHTML = html
-
-  //     const inputExpenseType = screen.getByTestId("expense-type");
-  //     expect(inputExpenseType.value).toBe("");
-
-  //     const inputExpenseName = screen.getByTestId("expense-name");
-  //     expect(inputExpenseName.value).toBe("");
-
-  //     const inputDatePicker = screen.getByTestId("datepicker");
-  //     expect(inputDatePicker.value).toBe("");
-
-  //     const inputAmount = screen.getByTestId("amount");
-  //     expect(inputAmount.value).toBe("");
-
-  //     const inputVAT = screen.getByTestId("vat");
-  //     expect(inputVAT.value).toBe("");
-
-  //     const inputPCT = screen.getByTestId("pct");
-  //     expect(inputPCT.value).toBe("");
-
-  //     const inputCommentary = screen.getByTestId("commentary");
-  //     expect(inputCommentary.value).toBe("");
-
-  //     const inputFile = screen.getByTestId("file");
-  //     expect(inputFile.value).toBe("");
-
-  //     const form = screen.getByTestId("form-new-bill");
-
-  //     form.addEventListener("submit", handleSubmit);
-  //     fireEvent.submit(form);
-  //     expect(screen.getByTestId("form-employee")).toBeTruthy();
-  //   })
-  // })
   // test d'intégration POST
   describe("When I do fill fields in correct format and I click on button Send", () => {
     test("Then it should add the new bill to the list", () => {
-      const html = NewBillUI()
-      document.body.innerHTML = html
+      document.body.innerHTML = NewBillUI()
 
+      Object.defineProperty(window, "localStorage",
+        { value: { getItem: jest.fn(() => JSON.stringify({ email: "email@test.com", })), }, }
+      );
       const onNavigate = (pathname) => {
         document.body.innerHTML = ROUTES({ pathname });
       };
 
-      const form = screen.getByTestId("form-new-bill");
+      const inputData = {
+        type: "Transports",
+        name: "Name",
+        datepicker: "2022-06-02",
+        amount: "364",
+        vat: "80",
+        pct: "20",
+        commentary: "Commentary",
+        file: new File(["test"], "test.png", { type: "image/png" }),
+      };
+
+      const inputExpenseType = screen.getByTestId("expense-type");
+      fireEvent.change(inputExpenseType, { target: { value: inputData.type } });
+      expect(inputExpenseType.value).toBe(inputData.type);
+
+      const inputExpenseName = screen.getByTestId("expense-name");
+      fireEvent.change(inputExpenseName, { target: { value: inputData.name } });
+      expect(inputExpenseName.value).toBe(inputData.name);
+
+      const inputDatePicker = screen.getByTestId("datepicker");
+      fireEvent.change(inputDatePicker, { target: { value: inputData.datepicker } });
+      expect(inputDatePicker.value).toBe(inputData.datepicker);
+
+      const inputAmount = screen.getByTestId("amount");
+      fireEvent.change(inputAmount, { target: { value: inputData.amount } });
+      expect(inputAmount.value).toBe(inputData.amount);
+
+      const inputVAT = screen.getByTestId("vat");
+      fireEvent.change(inputVAT, { target: { value: inputData.vat } });
+      expect(inputVAT.value).toBe(inputData.vat);
+
+      const inputPCT = screen.getByTestId("pct");
+      fireEvent.change(inputPCT, { target: { value: inputData.pct } });
+      expect(inputPCT.value).toBe(inputData.pct);
+
+      const inputCommentary = screen.getByTestId("commentary");
+      fireEvent.change(inputCommentary, { target: { value: inputData.commentary } });
+      expect(inputCommentary.value).toBe(inputData.commentary);
+
+      const inputFile = screen.getByTestId("file");
+      userEvent.upload(inputFile, inputData.file);
+      expect(inputFile.files[0]).toStrictEqual(inputData.file);
+      expect(inputFile.files).toHaveLength(1);
+
       const newBill = new NewBill({
         document,
         onNavigate,
         store,
         localStorage: window.localStorage,
       });
-      const inputEmailUser = screen.getByTestId("admin-email-input");
-      fireEvent.change(inputEmailUser, { target: { value: "pasunemail" } });
-      expect(inputEmailUser.value).toBe("pasunemail");
 
-      const inputExpenseType = screen.getByTestId("expense-type");
-      fireEvent.change(inputExpenseType, { target: { value: "pasunemail" } });
-      expect(inputExpenseType.value).toBe("pasunemail");
-
-      const inputExpenseName = screen.getByTestId("expense-name");
-      fireEvent.change(inputExpenseName, { target: { value: "pasunemail" } });
-      expect(inputExpenseName.value).toBe("pasunemail");
-
-      const inputDatePicker = screen.getByTestId("datepicker");
-      fireEvent.change(inputDatePicker, { target: { value: "pasunemail" } });
-      expect(inputDatePicker.value).toBe("pasunemail");
-
-      const inputAmount = screen.getByTestId("amount");
-      fireEvent.change(inputAmount, { target: { value: "pasunemail" } });
-      expect(inputAmount.value).toBe("pasunemail");
-
-      const inputVAT = screen.getByTestId("vat");
-      fireEvent.change(inputVAT, { target: { value: "pasunemail" } });
-      expect(inputVAT.value).toBe("pasunemail");
-
-      const inputPCT = screen.getByTestId("pct");
-      fireEvent.change(inputPCT, { target: { value: "pasunemail" } });
-      expect(inputPCT.value).toBe("pasunemail");
-
-      const inputCommentary = screen.getByTestId("commentary");
-      fireEvent.change(inputCommentary, { target: { value: "pasunemail" } });
-      expect(inputCommentary.value).toBe("pasunemail");;
-
-      const inputFile = screen.getByTestId("file");
-      fireEvent.change(inputFile, { target: { value: "pasunemail" } });
-      expect(inputFile.value).toBe("pasunemail");
-
-      const handleSubmit = jest.fn((e) => newBill.handleSubmit(e));
       const submitForm = screen.getByTestId("form-new-bill");
-      form.addEventListener("submit", handleSubmit);
+      const handleSubmit = jest.fn((e) => newBill.handleSubmit(e));
+      submitForm.addEventListener("submit", handleSubmit);
       fireEvent.submit(submitForm);
       expect(handleSubmit).toHaveBeenCalled();
     })
-    test("Then fails with 404 message error", async () => {
+    test("Then fails with 404 message error", () => {
       const html = BillsUI({ error: "Erreur 404" })
       document.body.innerHTML = html
 
-      const message = await screen.getByText(/Erreur 404/)
+      const message = screen.getByText(/Erreur 404/)
       expect(message).toBeTruthy()
     })
-    test("Then fails with 500 message error", async () => {
+    test("Then fails with 500 message error", () => {
       const html = BillsUI({ error: "Erreur 500" })
       document.body.innerHTML = html
 
-      const message = await screen.getByText(/Erreur 500/)
+      const message = screen.getByText(/Erreur 500/)
       expect(message).toBeTruthy()
     })
   })
