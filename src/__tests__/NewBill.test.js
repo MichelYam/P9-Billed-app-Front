@@ -10,7 +10,10 @@ import NewBill from "../containers/NewBill.js"
 import { localStorageMock } from "../__mocks__/localStorage.js";
 import { ROUTES_PATH, ROUTES } from "../constants/routes.js";
 import store from "../__mocks__/store.js"
+import mockStore from "../__mocks__/store";
 import router from "../app/Router.js";
+
+jest.mock("../app/store", () => mockStore)
 
 
 describe("Given I am connected as an employee", () => {
@@ -93,6 +96,7 @@ describe("Given I am connected as an employee", () => {
       expect(inputFile.files[0].name).toBe("image.png");
     })
   })
+
   // test d'intégration POST
   describe("When I do fill fields in correct format and I click on button Send", () => {
     test("Then it should add the new bill to the list", () => {
@@ -162,26 +166,85 @@ describe("Given I am connected as an employee", () => {
       fireEvent.submit(submitForm);
       expect(handleSubmit).toHaveBeenCalled();
     })
-    test("Then fails with 404 message error", () => {
-      const html = BillsUI({ error: "Erreur 404" })
-      document.body.innerHTML = html
+    test("Then, I should be sent on Bills page", () => {
+      Object.defineProperty(window, "localStorage", {
+        value: localStorageMock,
+      });
+      window.localStorage.setItem(
+        "user",
+        JSON.stringify({
+          type: "Employee",
+        })
+      );
+      const onNavigate = (pathname) => {
+        document.body.innerHTML = ROUTES({ pathname });
+      };
+      const html = NewBillUI();
+      document.body.innerHTML = html;
 
-      const message = screen.getByText(/Erreur 404/)
-      expect(message).toBeTruthy()
+      const newBills = new NewBill({
+        document,
+        onNavigate,
+        store: mockStore,
+        localStorage: window.localStorage,
+      });
+
+      const handleSubmit = jest.fn(newBills.handleSubmit);
+      const newBillForm = screen.getByTestId("form-new-bill");
+
+      newBillForm.addEventListener("submit", handleSubmit);
+
+      fireEvent.submit(newBillForm);
+
+      expect(handleSubmit).toHaveBeenCalled();
+      expect(screen.getAllByText("Mes notes de frais")).toBeTruthy();
     })
-    test("Then fails with 500 message error", () => {
-      const html = BillsUI({ error: "Erreur 500" })
-      document.body.innerHTML = html
 
-      const message = screen.getByText(/Erreur 500/)
-      expect(message).toBeTruthy()
+    describe("When an error occurs on API", () => {
+      beforeEach(() => {
+        jest.spyOn(mockStore, "bills");
+        Object.defineProperty(window, "localStorage", {
+          value: localStorageMock,
+        });
+        window.localStorage.setItem(
+          "user",
+          JSON.stringify({
+            type: "Employee",
+            email: "a@a",
+          })
+        );
+        const root = document.createElement("div");
+        root.setAttribute("id", "root");
+        document.body.appendChild(root);
+        router();
+      });
+      test("Then fails with 404 message error", async () => {
+        mockStore.bills.mockImplementationOnce(() => {
+          return {
+            list: () => {
+              return Promise.reject(new Error("Erreur 404"))
+            }
+          }
+        })
+        const html = BillsUI({ error: "Erreur 404" });
+        document.body.innerHTML = html;
+        const message = await screen.getByText(/Erreur 404/)
+        expect(message).toBeTruthy()
+      })
+      test("Then fails with 500 message error", async () => {
+        mockStore.bills.mockImplementationOnce(() => {
+          return {
+            list: () => {
+              return Promise.reject(new Error("Erreur 500"))
+            }
+          }
+        })
+
+        const html = BillsUI({ error: "Erreur 500" });
+        document.body.innerHTML = html;
+        const message = await screen.getByText(/Erreur 500/)
+        expect(message).toBeTruthy()
+      })
     })
   })
 })
-
-
-// Si les champs sont vide=>on reste sur la page de login 
-// Les champs obligatoires possèdent l'attribut 'Required' 
-// S'assurer du control du format de fichier uploader (jpeg|jpg|png) 
-// Dans le cas ou, il s 'agit du bon format 
-// Dans le cas ou il s'agit du mauvais format 

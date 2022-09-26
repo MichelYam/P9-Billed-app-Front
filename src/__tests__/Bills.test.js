@@ -79,9 +79,9 @@ describe("Given I am connected as an employee", () => {
       const onNavigate = (pathname) => {
         document.body.innerHTML = ROUTES({ pathname })
       }
+
       const store = null;
       const bill = new Bills({ document, onNavigate, store, localStorage: window.localStorage })
-
 
       const newBill = jest.fn(() => bill.handleClickNewBill)
       const navigationBtn = screen.getByTestId('btn-new-bill')
@@ -147,9 +147,7 @@ describe("Given I am connected as an employee", () => {
         const message = await screen.getByText(/Erreur 404/)
         expect(message).toBeTruthy()
       })
-
       test("fetches messages from an API and fails with 500 message error", async () => {
-
         mockStore.bills.mockImplementationOnce(() => {
           return {
             list: () => {
