@@ -178,3 +178,10 @@ describe("Given I am connected as an employee", () => {
     })
   })
 })
+
+
+// Si les champs sont vide=>on reste sur la page de login 
+// Les champs obligatoires possèdent l'attribut 'Required' 
+// S'assurer du control du format de fichier uploader (jpeg|jpg|png) 
+// Dans le cas ou, il s 'agit du bon format 
+// Dans le cas ou il s'agit du mauvais format 

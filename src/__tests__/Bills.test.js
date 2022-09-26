@@ -10,6 +10,8 @@ import Bills from "../containers/Bills.js";
 import mockStore from "../__mocks__/store";
 import router from "../app/Router.js";
 
+jest.mock("../app/store", () => mockStore)
+
 describe("Given I am connected as an employee", () => {
   describe("When I am on Bills Page", () => {
     test("Then bill icon in vertical layout should be highlighted", async () => {
@@ -133,16 +135,13 @@ describe("Given I am connected as an employee", () => {
         router()
       })
       test("fetches bills from an API and fails with 404 message error", async () => {
-        const html = BillsUI({ error: "Erreur 404" })
-        document.body.innerHTML = html
-
-        // mockStore.bills.mockImplementationOnce(() => {
-        //   return {
-        //     list: () => {
-        //       return Promise.reject(new Error("Erreur 404"))
-        //     }
-        //   }
-        // })
+        mockStore.bills.mockImplementationOnce(() => {
+          return {
+            list: () => {
+              return Promise.reject(new Error("Erreur 404"))
+            }
+          }
+        })
         window.onNavigate(ROUTES_PATH.Bills)
         await new Promise(process.nextTick);
         const message = await screen.getByText(/Erreur 404/)
@@ -151,18 +150,16 @@ describe("Given I am connected as an employee", () => {
 
       test("fetches messages from an API and fails with 500 message error", async () => {
 
-        // mockStore.bills.mockImplementationOnce(() => {
-        //   return {
-        //     list: () => {
-        //       return Promise.reject(new Error("Erreur 500"))
-        //     }
-        //   }
-        // })
-        const html = BillsUI({ error: "Erreur 500" })
-        document.body.innerHTML = html
+        mockStore.bills.mockImplementationOnce(() => {
+          return {
+            list: () => {
+              return Promise.reject(new Error("Erreur 500"))
+            }
+          }
+        })
 
-        // window.onNavigate(ROUTES_PATH.Bills)
-        // await new Promise(process.nextTick);
+        window.onNavigate(ROUTES_PATH.Bills)
+        await new Promise(process.nextTick);
         const message = await screen.getByText(/Erreur 500/)
         expect(message).toBeTruthy()
       })
