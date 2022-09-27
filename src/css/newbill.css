@@ -3,13 +3,13 @@
 }
 
 .col-half {
-  margin:auto;
+  margin: auto;
   width: 75%;
   margin-top: 16px;
 }
 
 .col-half-row {
-  display:flex;
+  display: flex;
   width: 75%;
   margin-left: 20px;
   margin-top: 16px;
@@ -60,4 +60,15 @@ textarea:focus, input:focus, select:focus {
 
 *[placeholder] {
   color: #0E5AE5 !important;
+}
+
+.error {
+  color: red;
+  font-weight: 500;
+  font-size: 12px;
+  padding: 0.5rem;
+}
+
+.hidden {
+  display: none;
 }

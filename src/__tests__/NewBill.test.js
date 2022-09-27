@@ -37,15 +37,14 @@ describe("Given I am connected as an employee", () => {
       window.onNavigate(ROUTES_PATH.NewBill)
       await waitFor(() => screen.getByTestId('icon-mail'))
       const mailIcon = screen.getByTestId('icon-mail')
-      console.log(mailIcon)
+
       const iconActive = mailIcon.classList.contains("active-icon");
       expect(iconActive).toBeTruthy();
     })
   })
   describe("When I am on NewBill Page and I choose a file with an incorret extension", () => {
-    test("Then it should display error message", () => {
-      const html = NewBillUI()
-      document.body.innerHTML = html
+    test("Then it should display error message", async () => {
+      document.body.innerHTML = NewBillUI()
 
       const onNavigate = (pathname) => {
         document.body.innerHTML = ROUTES({ pathname });
@@ -57,21 +56,24 @@ describe("Given I am connected as an employee", () => {
         store,
         localStorage: window.localStorage,
       });
+
       const inputFile = screen.getByTestId("file");
       const handleChangeFile = jest.fn((e) => newBill.handleChangeFile(e));
 
       inputFile.addEventListener("change", handleChangeFile)
-      fireEvent.change(inputFile, { target: { files: [new File(['input'], 'image.pdf', { type: 'image/png' })], } });
+      fireEvent.change(inputFile, { target: { files: [new File(['image'], 'image.pdf', { type: 'image/txt' })], } });
 
       expect(handleChangeFile).toHaveBeenCalled();
-      expect(inputFile.files[0].name).not.toBe("image.png");
+      expect(inputFile.files[0].type).toBe("image/txt");
+
+      await waitFor(() => screen.getByTestId("error-msg"));
+      expect(screen.getByTestId("error-msg").classList).not.toContain("hidden");
     })
   })
 
   describe("When I am on NewBill Page and I choose a file with a correct extension", () => {
     test("Then it should display the file name", () => {
-      const html = NewBillUI()
-      document.body.innerHTML = html
+      document.body.innerHTML = NewBillUI()
 
       const onNavigate = (pathname) => {
         document.body.innerHTML = ROUTES({ pathname });
@@ -88,14 +90,39 @@ describe("Given I am connected as an employee", () => {
       const handleChangeFile = jest.fn((e) => newBill.handleChangeFile(e));
 
       inputFile.addEventListener("change", handleChangeFile)
-
-      fireEvent.change(inputFile, { target: { files: [new File(['input'], 'image.png', { type: 'image/png' })], } });
-
+      userEvent.upload(inputFile, new File(['input'], 'image.png', { type: 'image/png' }));
 
       expect(handleChangeFile).toHaveBeenCalled();
       expect(inputFile.files[0].name).toBe("image.png");
     })
   })
+
+  describe("When I do fill fields in incorrect format and I click on button Send", () => {
+    test("Then It should renders New Bills page", () => {
+      document.body.innerHTML = NewBillUI()
+
+      expect(screen.getByTestId("expense-name").value).toBe("");
+
+      expect(screen.getByTestId("datepicker").value).toBe("");
+
+      expect(screen.getByTestId("amount").value).toBe("");
+
+      expect(screen.getByTestId("vat").value).toBe("");
+
+      expect(screen.getByTestId("pct").value).toBe("");
+
+      expect(screen.getByTestId("file").value).toBe("");
+
+      const form = screen.getByTestId("form-new-bill");
+      const handleSubmit = jest.fn((e) => e.preventDefault());
+
+      form.addEventListener("submit", handleSubmit);
+      fireEvent.submit(form);
+      expect(handleSubmit).toHaveBeenCalled();
+      expect(screen.getByTestId("form-new-bill")).toBeTruthy();
+
+    });
+  });
 
   // test d'intégration POST
   describe("When I do fill fields in correct format and I click on button Send", () => {
