@@ -94,27 +94,18 @@ describe("Given I am connected as an employee", () => {
 
   // test d'intégration GET
   describe("When I am on Bills Page", () => {
-    test("fetches bills from mock API GET", () => {
-      Object.defineProperty(window, "localStorage", { value: localStorageMock, });
-      window.localStorage.setItem("user", JSON.stringify({ type: "Employee", }));
-
-      const root = document.createElement("div");
-      root.setAttribute("id", "root");
-      document.body.append(root);
-      // mock navigation
-      const pathname = ROUTES_PATH["Bills"];
-      root.innerHTML = ROUTES({ pathname: pathname, loading: true });
-      //mock bills
-      const bills = new Bills({
-        document,
-        onNavigate,
-        store: mockStore,
-        localStorage,
-      });
-      bills.getBills().then((data) => {
-        root.innerHTML = BillsUI({ data });
-        expect(document.querySelector("tbody").rows.length).toBeGreaterThan(0);
-      })
+    test("fetches bills from mock API GET", async () => {
+      localStorage.setItem(
+        'user',
+        JSON.stringify({ type: 'Employee', email: 'a@a' })
+      )
+      const root = document.createElement('div')
+      root.setAttribute('id', 'root')
+      document.body.append(root)
+      router()
+      window.onNavigate(ROUTES_PATH.Bills)
+      await waitFor(() => screen.getByText('Mes notes de frais'))
+      expect(screen.getByTestId('btn-new-bill')).toBeTruthy()
     })
 
     describe("When an error occurs on API", () => {
@@ -133,6 +124,7 @@ describe("Given I am connected as an employee", () => {
         root.setAttribute("id", "root")
         document.body.appendChild(root)
         router()
+
       })
       test("fetches bills from an API and fails with 404 message error", async () => {
         mockStore.bills.mockImplementationOnce(() => {
