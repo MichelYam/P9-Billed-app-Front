@@ -26,10 +26,11 @@ export default class NewBill {
     const email = JSON.parse(localStorage.getItem("user")).email
     const formats = ["jpeg", "jpg", "png"]
     const errorMessage = this.document.querySelector("#error-msg");
+    formData.append('file', file)
+    formData.append('email', email)
 
+    //bugs
     if (formats.includes(fileFormat)) {
-      formData.append('file', file)
-      formData.append('email', email)
       errorMessage.classList.add("hidden");
       this.store
         .bills()

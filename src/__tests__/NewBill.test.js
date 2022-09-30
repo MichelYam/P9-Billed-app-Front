@@ -29,7 +29,6 @@ describe("Given I am connected as an employee", () => {
       window.onNavigate(ROUTES_PATH.NewBill)
       await waitFor(() => screen.getByTestId('icon-mail'))
       const mailIcon = screen.getByTestId('icon-mail')
-
       const iconActive = mailIcon.classList.contains("active-icon");
       expect(iconActive).toBeTruthy();
     })
@@ -94,15 +93,10 @@ describe("Given I am connected as an employee", () => {
       document.body.innerHTML = NewBillUI()
 
       expect(screen.getByTestId("expense-name").value).toBe("");
-
       expect(screen.getByTestId("datepicker").value).toBe("");
-
       expect(screen.getByTestId("amount").value).toBe("");
-
       expect(screen.getByTestId("vat").value).toBe("");
-
       expect(screen.getByTestId("pct").value).toBe("");
-
       expect(screen.getByTestId("file").value).toBe("");
 
       const form = screen.getByTestId("form-new-bill");
@@ -111,7 +105,7 @@ describe("Given I am connected as an employee", () => {
       form.addEventListener("submit", handleSubmit);
       fireEvent.submit(form);
       expect(handleSubmit).toHaveBeenCalled();
-      expect(screen.getByTestId("form-new-bill")).toBeTruthy();
+      expect(form).toBeTruthy();
 
     });
   });
@@ -135,16 +129,63 @@ describe("Given I am connected as an employee", () => {
       document.body.appendChild(root);
       router();
     });
-    describe("when APi is working well", () => {
+    describe("when APi is working", () => {
       test("Then it should add the new bill to the list and I should be sent on Bills page", () => {
         document.body.innerHTML = NewBillUI()
-
-        Object.defineProperty(window, "localStorage",
-          { value: { getItem: jest.fn(() => JSON.stringify({ email: "email@test.com", })), }, }
+        Object.defineProperty(window, "localStorage", {
+          value: localStorageMock,
+        });
+        window.localStorage.setItem(
+          "user",
+          JSON.stringify({
+            type: "Employee",
+            email: "a@a",
+          })
         );
         const onNavigate = (pathname) => {
           document.body.innerHTML = ROUTES({ pathname });
         };
+
+        const inputData = {
+          type: "Transports",
+          name: "Name",
+          datepicker: "2022-06-02",
+          amount: "364",
+          vat: "80",
+          pct: "20",
+          commentary: "Commentary",
+          file: new File(["test"], "test.png", { type: "image/png" }),
+        };
+
+        const inputExpenseType = screen.getByTestId("expense-type");
+        fireEvent.change(inputExpenseType, { target: { value: inputData.type }, });
+        expect(inputExpenseType.value).toBe(inputData.type);
+
+        const inputExpenseName = screen.getByTestId("expense-name");
+        fireEvent.change(inputExpenseName, { target: { value: inputData.name }, });
+        expect(inputExpenseName.value).toBe(inputData.name);
+
+        const inputDatePicker = screen.getByTestId("datepicker");
+        fireEvent.change(inputDatePicker, { target: { value: inputData.datepicker }, });
+        expect(inputDatePicker.value).toBe(inputData.datepicker);
+
+        const inputAmount = screen.getByTestId("amount");
+        fireEvent.change(inputAmount, { target: { value: inputData.amount }, });
+        expect(inputAmount.value).toBe(inputData.amount);
+
+        const inputVAT = screen.getByTestId("vat");
+        fireEvent.change(inputVAT, { target: { value: inputData.vat }, });
+        expect(inputVAT.value).toBe(inputData.vat);
+
+        const inputPCT = screen.getByTestId("pct");
+        fireEvent.change(inputPCT, { target: { value: inputData.pct }, });
+        expect(inputPCT.value).toBe(inputData.pct);
+
+        const inputFile = screen.getByTestId("file");
+        userEvent.upload(inputFile, inputData.file);
+        expect(inputFile.files[0]).toStrictEqual(inputData.file);
+        expect(inputFile.files).toHaveLength(1);
+
 
         const newBill = new NewBill({
           document,

@@ -21,10 +21,15 @@ export default class {
   }
 
   handleClickIconEye = (icon) => {
-    const billUrl = icon.getAttribute("data-bill-url")
-    const imgWidth = Math.floor($('#modaleFile').width() * 0.5)
-    $('#modaleFile').find(".modal-body").html(`<div style='text-align: center;' class="bill-proof-container"><img width=${imgWidth} src=${billUrl} alt="Bill" /></div>`)
-    $('#modaleFile').modal('show')
+    const billUrl = icon.getAttribute("data-bill-url");
+    const imgWidth = Math.floor($('#modaleFile').width() * 0.5);
+    //Bugs
+    if (!billUrl.includes("null")) {
+      $('#modaleFile').find(".modal-body").html(`<div style='text-align: center;' class="bill-proof-container"><img width=${imgWidth} src=${billUrl} alt="Bill" /></div>`);
+    } else {
+      $('#modaleFile').find(".modal-body").html(`<div style='text-align: center;' class="bill-proof-container">Image non disponible</div>`);
+    }
+    $('#modaleFile').modal('show');
   }
 
   getBills = () => {
