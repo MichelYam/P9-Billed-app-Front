@@ -44,7 +44,7 @@ describe("Given I am connected as an employee", () => {
       const newBill = new NewBill({
         document,
         onNavigate,
-        store,
+        store: mockStore,
         localStorage: window.localStorage,
       });
 
@@ -64,6 +64,7 @@ describe("Given I am connected as an employee", () => {
 
   describe("When I am on NewBill Page and I choose a file with a correct extension", () => {
     test("Then it should display the file name", () => {
+
       document.body.innerHTML = NewBillUI()
 
       const onNavigate = (pathname) => {
@@ -73,7 +74,7 @@ describe("Given I am connected as an employee", () => {
       const newBill = new NewBill({
         document,
         onNavigate,
-        store,
+        store: mockStore,
         localStorage: window.localStorage,
       });
 
@@ -82,16 +83,21 @@ describe("Given I am connected as an employee", () => {
 
       inputFile.addEventListener("change", handleChangeFile)
       userEvent.upload(inputFile, new File(['input'], 'image.png', { type: 'image/png' }));
-
       expect(handleChangeFile).toHaveBeenCalled();
+      expect(inputFile.files[0]).toStrictEqual(new File(["img"], "image.png", { type: "image/png" }));
       expect(inputFile.files[0].name).toBe("image.png");
     })
   })
 
   describe("When I do fill fields in incorrect format and I click on button Send", () => {
     test("Then It should renders New Bills page", () => {
-      document.body.innerHTML = NewBillUI()
-
+      window.onNavigate(ROUTES_PATH.NewBill);
+      const newBill = new NewBill({
+        document,
+        onNavigate,
+        mockStore,
+        localStorage: window.localStorage,
+      });
       expect(screen.getByTestId("expense-name").value).toBe("");
       expect(screen.getByTestId("datepicker").value).toBe("");
       expect(screen.getByTestId("amount").value).toBe("");
@@ -100,7 +106,7 @@ describe("Given I am connected as an employee", () => {
       expect(screen.getByTestId("file").value).toBe("");
 
       const form = screen.getByTestId("form-new-bill");
-      const handleSubmit = jest.fn((e) => e.preventDefault());
+      const handleSubmit = jest.fn((e) => newBill.handleSubmit(e));
 
       form.addEventListener("submit", handleSubmit);
       fireEvent.submit(form);
@@ -157,6 +163,14 @@ describe("Given I am connected as an employee", () => {
           file: new File(["test"], "test.png", { type: "image/png" }),
         };
 
+
+        const newBill = new NewBill({
+          document,
+          onNavigate,
+          store: mockStore,
+          localStorage: window.localStorage,
+        });
+
         const inputExpenseType = screen.getByTestId("expense-type");
         fireEvent.change(inputExpenseType, { target: { value: inputData.type }, });
         expect(inputExpenseType.value).toBe(inputData.type);
@@ -187,19 +201,13 @@ describe("Given I am connected as an employee", () => {
         expect(inputFile.files).toHaveLength(1);
 
 
-        const newBill = new NewBill({
-          document,
-          onNavigate,
-          store: mockStore,
-          localStorage: window.localStorage,
-        });
-
         const submitForm = screen.getByTestId("form-new-bill");
         const handleSubmit = jest.fn((e) => newBill.handleSubmit(e));
         submitForm.addEventListener("submit", handleSubmit);
         fireEvent.submit(submitForm);
         expect(handleSubmit).toHaveBeenCalled();
         expect(screen.getAllByText("Mes notes de frais")).toBeTruthy();
+        expect(mockStore.bills).toHaveBeenCalled();
       })
     })
     describe("When an error occurs on API", () => {
