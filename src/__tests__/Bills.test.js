@@ -29,8 +29,10 @@ describe("Given I am connected as an employee", () => {
       const windowIcon = screen.getByTestId('icon-window')
       //to-do write expect expression
       console.log(windowIcon)
-      //Verify if the icon had "actvite-icon" class
       const iconActive = windowIcon.classList.contains("active-icon");
+      /**
+       * BUGS missing expect
+       */
       expect(iconActive).toBeTruthy();
     })
     test("Then bills should be ordered from earliest to latest", () => {
@@ -41,7 +43,9 @@ describe("Given I am connected as an employee", () => {
       expect(dates).toEqual(datesSorted)
     })
   })
-
+  /**
+   * ADD news tests
+   */
   describe("When I am on Bills Page and I click on the icon eye ", () => {
     test("Then a modal should open", () => {
       Object.defineProperty(window, 'localStorage', { value: localStorageMock })

@@ -27,8 +27,10 @@ export default class NewBill {
     formData.append('file', file)
     formData.append('email', email)
 
-    //bugs
-    if (  (file && file.type === "image/jpeg") ||
+    /**
+     * BUGS handle file extension
+     */
+    if ((file && file.type === "image/jpeg") ||
       file.type === "image/jpg" ||
       file.type === "image/png") {
       errorMessage.classList.add("hidden");
@@ -72,7 +74,7 @@ export default class NewBill {
   }
 
   // not need to cover this function by tests
-   /* istanbul ignore next */
+  /* istanbul ignore next */
   updateBill = (bill) => {
     if (this.store) {
       this.store

@@ -5,11 +5,9 @@
 import { screen, waitFor, fireEvent } from "@testing-library/dom";
 import userEvent from '@testing-library/user-event'
 import NewBillUI from "../views/NewBillUI.js"
-import BillsUI from "../views/BillsUI.js"
 import NewBill from "../containers/NewBill.js"
 import { localStorageMock } from "../__mocks__/localStorage.js";
 import { ROUTES_PATH, ROUTES } from "../constants/routes.js";
-import store from "../__mocks__/store.js"
 import mockStore from "../__mocks__/store";
 import router from "../app/Router.js";
 
@@ -152,18 +150,6 @@ describe("Given I am connected as an employee", () => {
           document.body.innerHTML = ROUTES({ pathname });
         };
 
-        const inputData = {
-          type: "Transports",
-          name: "Name",
-          datepicker: "2022-06-02",
-          amount: "364",
-          vat: "80",
-          pct: "20",
-          commentary: "Commentary",
-          file: new File(["test"], "test.png", { type: "image/png" }),
-        };
-
-
         const newBill = new NewBill({
           document,
           onNavigate,
@@ -172,32 +158,32 @@ describe("Given I am connected as an employee", () => {
         });
 
         const inputExpenseType = screen.getByTestId("expense-type");
-        fireEvent.change(inputExpenseType, { target: { value: inputData.type }, });
-        expect(inputExpenseType.value).toBe(inputData.type);
+        fireEvent.change(inputExpenseType, { target: { value: "Transports" }, });
+        expect(inputExpenseType.value).toBe("Transports");
 
         const inputExpenseName = screen.getByTestId("expense-name");
-        fireEvent.change(inputExpenseName, { target: { value: inputData.name }, });
-        expect(inputExpenseName.value).toBe(inputData.name);
+        fireEvent.change(inputExpenseName, { target: { value: "Name" }, });
+        expect(inputExpenseName.value).toBe("Name");
 
         const inputDatePicker = screen.getByTestId("datepicker");
-        fireEvent.change(inputDatePicker, { target: { value: inputData.datepicker }, });
-        expect(inputDatePicker.value).toBe(inputData.datepicker);
+        fireEvent.change(inputDatePicker, { target: { value: "2022-06-02" }, });
+        expect(inputDatePicker.value).toBe("2022-06-02");
 
         const inputAmount = screen.getByTestId("amount");
-        fireEvent.change(inputAmount, { target: { value: inputData.amount }, });
-        expect(inputAmount.value).toBe(inputData.amount);
+        fireEvent.change(inputAmount, { target: { value: "364" }, });
+        expect(inputAmount.value).toBe("364");
 
         const inputVAT = screen.getByTestId("vat");
-        fireEvent.change(inputVAT, { target: { value: inputData.vat }, });
-        expect(inputVAT.value).toBe(inputData.vat);
+        fireEvent.change(inputVAT, { target: { value: "80" }, });
+        expect(inputVAT.value).toBe("80");
 
         const inputPCT = screen.getByTestId("pct");
-        fireEvent.change(inputPCT, { target: { value: inputData.pct }, });
-        expect(inputPCT.value).toBe(inputData.pct);
+        fireEvent.change(inputPCT, { target: { value: "20" }, });
+        expect(inputPCT.value).toBe("20");
 
         const inputFile = screen.getByTestId("file");
-        userEvent.upload(inputFile, inputData.file);
-        expect(inputFile.files[0]).toStrictEqual(inputData.file);
+        userEvent.upload(inputFile, new File(["test"], "test.png", { type: "image/png" }));
+        expect(inputFile.files[0]).toStrictEqual(new File(["test"], "test.png", { type: "image/png" }));
         expect(inputFile.files).toHaveLength(1);
 
 
