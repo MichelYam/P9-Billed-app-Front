@@ -21,16 +21,16 @@ export default class NewBill {
     const file = inputFile.files[0]
     const filePath = e.target.value.split(/\\/g)
     const fileName = filePath[filePath.length - 1]
-    const fileFormat = fileName.split('.').pop(); // get extension file
     const formData = new FormData()
     const email = JSON.parse(localStorage.getItem("user")).email
-    const formats = ["jpeg", "jpg", "png"]
     const errorMessage = this.document.querySelector("#error-msg");
     formData.append('file', file)
     formData.append('email', email)
 
     //bugs
-    if (formats.includes(fileFormat)) {
+    if (  (file && file.type === "image/jpeg") ||
+      file.type === "image/jpg" ||
+      file.type === "image/png") {
       errorMessage.classList.add("hidden");
       this.store
         .bills()
