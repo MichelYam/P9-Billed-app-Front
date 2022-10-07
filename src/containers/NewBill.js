@@ -24,15 +24,18 @@ export default class NewBill {
     const formData = new FormData()
     const email = JSON.parse(localStorage.getItem("user")).email
     const errorMessage = this.document.querySelector("#error-msg");
+    const fileExtensions = fileName.split(".").pop()
+    console.log(fileExtensions)
     formData.append('file', file)
     formData.append('email', email)
-
+    const formats = ["png", "jpeg", "jpg"];
     /**
      * BUGS handle file extension
      */
     if ((file && file.type === "image/jpeg") ||
       file.type === "image/jpg" ||
       file.type === "image/png") {
+      // if (formats && formats.includes(fileExtensions)) {
       errorMessage.classList.add("hidden");
       this.store
         .bills()
