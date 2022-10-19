@@ -24,6 +24,7 @@ describe("Given I am connected as an employee", () => {
       root.setAttribute("id", "root")
       document.body.append(root)
       router()
+
       window.onNavigate(ROUTES_PATH.NewBill)
       await waitFor(() => screen.getByTestId('icon-mail'))
       const mailIcon = screen.getByTestId('icon-mail')
@@ -185,13 +186,22 @@ describe("Given I am connected as an employee", () => {
         expect(inputFile.files[0]).toStrictEqual(new File(["test"], "test.png", { type: "image/png" }));
         expect(inputFile.files).toHaveLength(1);
 
-
         const submitForm = screen.getByTestId("form-new-bill");
         const handleSubmit = jest.fn((e) => newBill.handleSubmit(e));
         submitForm.addEventListener("submit", handleSubmit);
         fireEvent.submit(submitForm);
+        
+        mockStore.bills.mockImplementationOnce(() => {
+          return {
+            create: () => {
+              return Promise.resolve({})
+            },
+          };
+        });
+
         expect(handleSubmit).toHaveBeenCalled();
         expect(screen.getAllByText("Mes notes de frais")).toBeTruthy();
+        expect(mockStore.bills).toHaveBeenCalled();
       })
     })
     describe("When an error occurs on API", () => {
