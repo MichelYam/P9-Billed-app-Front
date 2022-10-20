@@ -230,6 +230,31 @@ describe("Given I am connected as an employee", () => {
 
         expect(handleSubmit).toHaveBeenCalled();
       })
+      test("Then fails with 500 message error", async () => {
+        window.onNavigate(ROUTES_PATH.NewBill);
+        mockStore.bills.mockImplementationOnce(() => {
+          return {
+            update: () => {
+              return Promise.reject(new Error("Erreur 500"));
+            },
+          };
+        });
+
+        const newBill = new NewBill({
+          document,
+          onNavigate,
+          store: mockStore,
+          localStorage: window.localStorage,
+        });
+
+        const form = screen.getByTestId("form-new-bill");
+        const handleSubmit = jest.fn((e) => newBill.handleSubmit(e));
+        form.addEventListener("submit", handleSubmit);
+
+        fireEvent.submit(form);
+
+        expect(handleSubmit).toHaveBeenCalled();
+      })
     })
   })
 })
