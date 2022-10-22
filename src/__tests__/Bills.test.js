@@ -109,6 +109,9 @@ describe("Given I am connected as an employee", () => {
       router()
       window.onNavigate(ROUTES_PATH.Bills)
       await waitFor(() => screen.getByText('Mes notes de frais'))
+      // const getBills = jest.fn(() => bills.getBills());
+      // const value = await getBills();
+      // expect(value).toHaveBeenCalled()
       expect(screen.getByTestId('btn-new-bill')).toBeTruthy()
     })
 
@@ -121,7 +124,7 @@ describe("Given I am connected as an employee", () => {
           { value: localStorageMock }
         )
         window.localStorage.setItem('user', JSON.stringify({
-          type: 'Employee',
+          type: 'Admin',
           email: "a@a"
         }))
         const root = document.createElement("div")
